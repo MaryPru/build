@@ -1,6 +1,6 @@
 <?php
-// $price=strval(11212);
-$price=rand(11111,99999);
+  $price=strval(10112);
+// $price=rand(11111,99999);
 $arr=str_split($price);
 $kop = array_slice($arr, -2, 2);
 $rub = array_slice($arr, 0, -2); 
@@ -39,7 +39,7 @@ switch (count($rub)==1) {
         break;
 }
 
-if(count($rub)==2 && ($rub_dec_str>=11 && $rub_dec_str<=19)) {
+if(count($rub)>=2 && ($rub_dec_str>=11 && $rub_dec_str<=19)) {
          $new_price_rub=[implode('',$rub),$r[2]];
 }
 elseif ($lastrub<5 && $lastrub>1 ) {

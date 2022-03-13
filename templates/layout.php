@@ -4,7 +4,7 @@ $show_complete_tasks = rand(0, 1);
 $tasks_arr = array(
     array(
         'name' => 'Собеседование в IT компании',
-        'date' => '10.03.2022',
+        'date' => '15.03.2022',
         'category' => 'Работа',
         'completed' => false,
     ),
@@ -16,7 +16,7 @@ $tasks_arr = array(
     ),
     array(
         'name' => 'Сделать задание первого раздела',
-        'date' => '09.03.2022',
+        'date' => '13.03.2022',
         'category' => 'Учеба',
         'completed' => true,
     ),

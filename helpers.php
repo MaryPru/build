@@ -156,14 +156,13 @@ function tasks_count(&$tasks_arr, $project_name)
 }
 
 function date_important ($date){
-    $today = date("m.d.y");
-    $now=strtotime($today)/3600;
-    $search_date=strtotime($date)/3600;
-    $difference=abs($now-$search_date);
+    $today =  strtotime(date("Ymd"));
+    $search_date=strtotime($date);
+    $difference=abs(($today-$search_date)/3600);
 
 
     if ($date !== "null"){
-        if($difference <= 24){
+        if($difference <=24){
             return 'task--important';
         }
         return '';

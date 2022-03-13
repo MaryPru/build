@@ -43,13 +43,13 @@
 
             <label class="checkbox">
 
-                <input class="checkbox__input visually-hidden show_completed   <?php
+                <input class="checkbox__input visually-hidden show_completed"   <?php
                 if ($show_complete_tasks == 1) {
                     echo "checked";
                 } else {
                     echo "";
                 }
-                ?>" type="checkbox">
+                ?> type="checkbox">
                 <span class="checkbox__text">Показывать выполненные</span>
             </label>
         </div>
@@ -73,20 +73,23 @@
             <?php
 
             foreach ($tasks_arr as $key => $value) {
-                if ($show_complete_tasks == 0) {
-                    $task_name = $value['name'];
-                    $task_date = $value['date'];
-                    $task_completed = $value['completed'];
-                    echo '
-                               <tr class="tasks__item '.date_important($task_date).' task ';
+                $task_name = $value['name'];
+                $task_date = $value['date'];
+                $task_completed = $value['completed'];
+                if ($show_complete_tasks == 0 && $task_completed == true) {
+                    continue;
+                }
+
+                       echo ' <tr class="tasks__item '; if ($task_completed == false) {echo date_important($task_date);}echo' task ';
                     if ($task_completed == true) {
                         echo 'task--completed';
                     }
                     echo '">';
                     echo ' <td class="task__select  ">
                             <label class="checkbox task__checkbox">
-                                <input class="checkbox__input visually-hidden task__checkbox" type="checkbox" value="1">
-                              <span class="checkbox__text">' . $task_name . '</span>
+                                <input class="checkbox__input visually-hidden task__checkbox" '; if ($task_completed == true) { echo "checked";}
+                 echo '  type="checkbox" value="1">';
+                echo '    <span class="checkbox__text">' . $task_name . '</span>
                             </label>
                         </td>
                         <td class="task__file">
@@ -98,8 +101,7 @@
                             ';
                 }
                 {
-                    continue;
-                }
+
             }
             ?>
 

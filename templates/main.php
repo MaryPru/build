@@ -5,16 +5,17 @@
         <nav class="main-navigation">
             <ul class="main-navigation__list">
                 <?php
-                foreach ($projects_arr as $project) {
+                foreach ($projects_arr as  $key => $value) {
+                    $project_id=$value['id'];
+                    $project_name = $value['name'];
                     echo '
                               <li class="main-navigation__list-item">
-                            <a class="main-navigation__list-item-link" href="#">' . $project . '</a>
-                            <span class="main-navigation__list-item-count">' . tasks_count($tasks_arr, $project) . '</span>
+                            <a class="main-navigation__list-item-link" href="#">' . $project_name . '</a>
+                            <span class="main-navigation__list-item-count">' . tasks_count($tasks_arr, $project_id) . '</span>
                         </li>
                             ';
                 }
                 ?>
-
             </ul>
         </nav>
 
@@ -71,7 +72,8 @@
             <?php
 
             foreach ($tasks_arr as $key => $value) {
-                $task_name = $value['name'];
+                $project_id=$value['project_id'];
+                $task_name = $value['task_name'];
                 $task_date = $value['date'];
                 $task_completed = $value['completed'];
                 if ($show_complete_tasks == 0 && $task_completed == true) {

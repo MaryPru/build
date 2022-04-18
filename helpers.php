@@ -143,12 +143,12 @@ function include_template($name, array $data = []) {
     return $result;   //функция возвращает значение в буфере
 }
 //функция подсчета количества задач в проекте
-function tasks_count(&$tasks_arr, $project_name)
+function tasks_count(&$tasks_arr, &$project_id)
 {
     $count = 0;
     foreach ($tasks_arr as $key => $value) {
-        $category = $value['category'];
-        if ($category == $project_name) {
+        $category = $value['project_id'];
+        if ($category == $project_id) {
             $count = $count + 1;
         }
     }

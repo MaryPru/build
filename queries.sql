@@ -41,3 +41,11 @@ SELECT * FROM tasks ORDER BY date ASC ;
 
 # вывести login из таблицы users, где email='maryprudyus@gmail.com'
 SELECT login FROM users WHERE email='maryprudyus@gmail.com';
+
+
+INSERT INTO `projects` ( `name`) VALUES ( 'PHP');
+
+INSERT INTO `tasks` ( `name`, `date`, `completed`, `file`, `project_id`, `user_id`) 
+VALUES ('Проверить ДЗ', '2022-04-30', '0', '', '6', '2'), 
+( 'Поставить оценку', '2022-04-30', '0', '', '6', '2');
+

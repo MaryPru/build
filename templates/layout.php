@@ -1,46 +1,46 @@
 <?php
-$show_complete_tasks = rand(0, 1);
 
-$tasks_arr = array(
-    array(
-        'name' => 'Собеседование в IT компании',
-        'date' => '10.03.2022',
-        'category' => 'Работа',
-        'completed' => false,
-    ),
-    array(
-        'name' => 'Выполнить тестовое задание',
-        'date' => '12.03.2022',
-        'category' => 'Работа',
-        'completed' => false,
-    ),
-    array(
-        'name' => 'Сделать задание первого раздела',
-        'date' => '09.03.2022',
-        'category' => 'Учеба',
-        'completed' => true,
-    ),
-    array(
-        'name' => 'Встреча с другом',
-        'date' => '13.03.2022',
-        'category' => 'Входящие',
-        'completed' => false,
-    ),
-    array(
-        'name' => 'Купить корм для кота',
-        'date' => 'null',
-        'category' => 'Домашние дела',
-        'completed' => false,
-    ),
-    array(
-        'name' => 'Заказать пиццу',
-        'date' => 'null',
-        'category' => 'Домашние дела',
-        'completed' => false,
-    ),
-);
 
-$projects_arr = array('Входящие', 'Учеба', 'Работа', 'Домашние дела', 'Авто');
+// $tasks_arr = array(
+//     array(
+//         'name' => 'Собеседование в IT компании',
+//         'date' => '10.03.2022',
+//         'category' => 'Работа',
+//         'completed' => false,
+//     ),
+//     array(
+//         'name' => 'Выполнить тестовое задание',
+//         'date' => '12.03.2022',
+//         'category' => 'Работа',
+//         'completed' => false,
+//     ),
+//     array(
+//         'name' => 'Сделать задание первого раздела',
+//         'date' => '09.03.2022',
+//         'category' => 'Учеба',
+//         'completed' => true,
+//     ),
+//     array(
+//         'name' => 'Встреча с другом',
+//         'date' => '13.03.2022',
+//         'category' => 'Входящие',
+//         'completed' => false,
+//     ),
+//     array(
+//         'name' => 'Купить корм для кота',
+//         'date' => 'null',
+//         'category' => 'Домашние дела',
+//         'completed' => false,
+//     ),
+//     array(
+//         'name' => 'Заказать пиццу',
+//         'date' => 'null',
+//         'category' => 'Домашние дела',
+//         'completed' => false,
+//     ),
+// );
+
+// $projects_arr = array('Входящие', 'Учеба', 'Работа', 'Домашние дела', 'Авто');
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -69,7 +69,7 @@ $projects_arr = array('Входящие', 'Учеба', 'Работа', 'Дом�
 
                 <div class="main-header__side-item user-menu">
                     <div class="user-menu__data">
-                        <p><?php echo $data['user']; ?></p>
+                        <p><?php echo $user ?></p>
 
                         <a href="#">Выйти</a>
                     </div>
@@ -78,11 +78,7 @@ $projects_arr = array('Входящие', 'Учеба', 'Работа', 'Дом�
         </header>
 
         <?php
-        $main=include_template('main.php',[
-            'tasks_arr'=>$tasks_arr,
-            'projects_arr'=>$projects_arr,
-            'show_complete_tasks'=>$show_complete_tasks
-        ]);
+      
         print($main);
         ?>
     </div>

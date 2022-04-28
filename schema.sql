@@ -18,8 +18,8 @@ CREATE TABLE `tasks`
   `name`       CHAR(128),
   `date`       date,
   `completed`  BOOLEAN DEFAULT FALSE,
-  `file`       varchar(20),
-  `project_id` int,
+  `file`       varchar(255),
+  `project_id` INT,
   `user_id`    INT
 );
 

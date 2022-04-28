@@ -74,6 +74,8 @@ function db_get_prepare_stmt($link, $sql, $data = []) {
     return $stmt;
 }
 
+
+
 /**
  * Возвращает корректную форму множественного числа
  * Ограничения: только для целых чисел
@@ -167,4 +169,58 @@ function date_important ($date){
         }
         return '';
     }
+}
+
+function IsProjectBD($project_Id, &$projects_arr){
+    foreach ($projects_arr as $project) {
+       if ($project['id'] === $project_Id) {
+           return TRUE;
+       }
+    }
+    return FALSE;
+}
+
+function getPostVal($name){
+   if(isset($_POST[$name])){
+        return  $_POST[$name]??'';
+}
+}
+
+function validate (&$fields){
+    $errors=[];
+    foreach ($fields as $key=>$value){   
+        if ($fields[$key]['required'] && empty($fields[$key]['val'])){
+            $errors[$key]="<li>Необходимо заполнить поле{$fields[$key]['field_name']}</li>";
+        }
+     }
+         
+    return $errors;
+}
+
+
+
+function validateDate ($postDate){
+    $errors=[];
+    $tempDate = date("Ymd");
+    $today = strtotime("$tempDate GMT");
+    $date = strtotime("$postDate GMT");
+      if ( $date  <$today ){
+          $errors['date']="<li>Укажите правильную дату!</li>";
+       }        
+   return $errors;
+}
+
+    
+
+function debug ($data){
+    echo '<pre>' .print_r($data).'</pre>';
+}
+
+function load (&$fields){
+    foreach($_POST as $key=>$value){
+        if(array_key_exists($key, $fields)){
+            $fields[$key]['val']=trim($value);
+        }
+    }
+    return $fields;
 }

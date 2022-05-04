@@ -1,94 +1,126 @@
 <?php
+session_start();
+require('../helpers.php');
+require('../data-auth.php');
+require_once('../inc/connect.php');
 
+mysqli_set_charset($con, "utf8");
 
-// $tasks_arr = array(
-//     array(
-//         'name' => 'Собеседование в IT компании',
-//         'date' => '10.03.2022',
-//         'category' => 'Работа',
-//         'completed' => false,
-//     ),
-//     array(
-//         'name' => 'Выполнить тестовое задание',
-//         'date' => '12.03.2022',
-//         'category' => 'Работа',
-//         'completed' => false,
-//     ),
-//     array(
-//         'name' => 'Сделать задание первого раздела',
-//         'date' => '09.03.2022',
-//         'category' => 'Учеба',
-//         'completed' => true,
-//     ),
-//     array(
-//         'name' => 'Встреча с другом',
-//         'date' => '13.03.2022',
-//         'category' => 'Входящие',
-//         'completed' => false,
-//     ),
-//     array(
-//         'name' => 'Купить корм для кота',
-//         'date' => 'null',
-//         'category' => 'Домашние дела',
-//         'completed' => false,
-//     ),
-//     array(
-//         'name' => 'Заказать пиццу',
-//         'date' => 'null',
-//         'category' => 'Домашние дела',
-//         'completed' => false,
-//     ),
-// );
+$errors = [];
+if (!empty ($_POST)) {
+    $fields = load($fields);
+//    echo "<pre>";
+//    print_r($fields);
+//    echo "</pre>";
+    if (($errors = validate($fields)) || ($errors = validateEmail($_POST['email']))) {
+//        echo "<pre>";
+//        print_r($errors);
+//        echo "</pre>";
 
-// $projects_arr = array('Входящие', 'Учеба', 'Работа', 'Домашние дела', 'Авто');
+        $errors['message'] = 'Пожалуйста, исправьте ошибки в форме';
+    }
+    $email = $_POST['email'];
+    $sql = "SELECT * FROM users WHERE email = '$email'";
+    $res = mysqli_query($con, $sql);
+
+    if (mysqli_num_rows($res) > 0) {
+        $user_res = mysqli_fetch_all($res, MYSQLI_ASSOC);
+        $user_active = $user_res[0];
+        if (password_verify(($_POST['password']), $user_active['password'])) {
+            $_SESSION['user_active'] = $user_active;
+//            print_r($user_active);
+            $isAuth = true;
+        } else {
+            $errors['password'] = 'Неверный пароль';
+        }
+    }
+}
+
+if (!empty($_POST) && empty($errors)) {
+    $page = include_template('index.php', [
+        'user_active' => $user_active,
+        'isAuth' => $isAuth
+    ]);
+
+    print($page);
+    header('Location:/');
+}
 ?>
+
+
 <!DOCTYPE html>
 <html lang="ru">
 
 <head>
     <meta charset="UTF-8">
-    <title><?php echo $data['title']; ?></title>
-    <link rel="stylesheet" href="css/normalize.css">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/flatpickr.min.css">
+    <title>Document</title>
+    <link rel="stylesheet" href="../css/normalize.css">
+    <link rel="stylesheet" href="../css/style.css">
 </head>
 
-<body <?php if ($isAuth !== true) echo "class='body-background'"; ?>>
+<body>
 <h1 class="visually-hidden">Дела в порядке</h1>
 
 <div class="page-wrapper">
-    <div class="container <?php if ($isAuth == true) echo "container--with-sidebar"; ?>">
-        <?php if ($isAuth == true) : ?>
+    <div class="container container--with-sidebar">
+
         <header class="main-header">
-            <a href="/">
-                <img src="img/logo.png" width="153" height="42" alt="Логотип Дела в порядке">
+            <a href="#">
+                <img src="../img/logo.png" width="153" height="42" alt="Логитип Дела в порядке">
             </a>
 
             <div class="main-header__side">
-                <a class="main-header__side-item button button--plus open-modal" href="/templates/add.php">Добавить
-                    задачу</a>
-
-                <div class="main-header__side-item user-menu">
-                    <div class="user-menu__data">
-                        <p><?php echo $user_active ?></p>
-
-                        <a href="templates/logout.php">Выйти</a>
-                    </div>
-                </div>
-            </div>
-            <!-- <div class="main-header__side">
                 <a class="main-header__side-item button button--transparent" href="auth.php">Войти</a>
-            </div> -->
-            <?php endif; ?>
+            </div>
         </header>
 
-        <?php
-        print($main);
-        ?>
+        <div class="content">
+
+            <section class="content__side">
+                <p class="content__side-info">Если у вас уже есть аккаунт, авторизуйтесь на сайте</p>
+
+                <a class="button button--transparent content__side-button" href="auth.php">Войти</a>
+            </section>
+
+            <main class="content__main">
+                <h2 class="content__main-heading">Вход на сайт</h2>
+
+                <form class="form" method="post" autocomplete="on">
+                    <div class="form__row">
+                        <label class="form__label" for="email">E-mail <sup>*</sup></label>
+
+                        <input class="form__input  <?php if (isset($errors['email'])) echo ' form__input--error'; ?>"
+                               type="text" name="email" id="email" value="<?= getPostVal('email') ?>"
+                               placeholder="Введите e-mail">
+
+                        <?php if (isset($errors['email'])) : ?>
+                            <p class="form_message"><?= $errors['email']; ?></p>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="form__row">
+                        <label class="form__label" for="password">Пароль <sup>*</sup></label>
+
+                        <input class="form__input  <?php if (isset($errors['password'])) echo ' form__input--error'; ?>"
+                               type="password" name="password" id="password" value="<?= getPostVal('password') ?>"
+                               placeholder="Введите пароль">
+                        <?php if (isset($errors['password'])) : ?>
+                            <p class="form_message"><?= $errors['password']; ?></p>
+                        <?php endif; ?>
+
+                    </div>
+
+                    <div class="form__row form__row--controls">
+                        <input class="button" type="submit" name="" value="Войти">
+                    </div>
+                </form>
+
+            </main>
+
+        </div>
 
     </div>
 </div>
-
 
 <footer class="main-footer">
     <div class="container">
@@ -97,9 +129,7 @@
 
             <p>Веб-приложение для удобного ведения списка дел.</p>
         </div>
-        <?php if ($isAuth == true) : ?>
-            <a class="main-footer__button button button--plus" href="/templates/add.php">Добавить задачу</a>
-        <?php endif; ?>
+
         <div class="main-footer__social social">
             <span class="visually-hidden">Мы в соцсетях:</span>
             <a class="social__link social__link--facebook" href="#">
@@ -143,13 +173,11 @@
             <span class="visually-hidden">Разработано:</span>
 
             <a href="https://htmlacademy.ru/intensive/php">
-                <img src="img/htmlacademy.svg" alt="HTML Academy" width="118" height="40">
+                <img src="../img/htmlacademy.svg" alt="HTML Academy" width="118" height="40">
             </a>
         </div>
     </div>
 </footer>
 
-<script src="flatpickr.js"></script>
-<script src="script.js"></script>
 </body>
-</html>'
+</html>

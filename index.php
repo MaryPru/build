@@ -1,59 +1,72 @@
 <?php
+session_start();
+$con = mysqli_connect('localhost', 'root', '', 'mydeal');
 
-$con =  mysqli_connect('localhost','root','','mydeal');
-
-if($con==false){
-    print("Ошибка" .mysqli_connect_error());
-}
-else{
+if ($con == false) {
+    print("Ошибка" . mysqli_connect_error());
+} else {
     // print("Соединение установлено");
 }
 
-mysqli_set_charset($con,"utf8");
+mysqli_set_charset($con, "utf8");
+$isAuth = isset($_SESSION['user_active']) ? TRUE : FALSE;
 
-$sql =( "SELECT  `login` FROM `users` WHERE id=1");
-$result=mysqli_query($con,$sql);
-if(!$result){
-    $error=mysqli_error($con);
-    print("Ошибка MYSQL".$error);
+if ($isAuth == true) {
+    $user_id = $_SESSION['user_active']['id'];
+    $sql = ("SELECT  login FROM `users` WHERE id=$user_id");
+    $result = mysqli_query($con, $sql);
+    if (!$result) {
+        $error = mysqli_error($con);
+        print("Ошибка MYSQL" . $error);
     }
-$users = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    $users = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
-$sql = ("SELECT  * FROM projects ");
-$result=mysqli_query($con,$sql);
-$projects_arr = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    $sql = ("SELECT  * FROM projects ");
+    $result = mysqli_query($con, $sql);
+    $projects_arr = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    $user_active = $_SESSION['user_active']['login'];
 
+    $sql = "SELECT t.name as task_name, t.date,t.file, t.completed, t.project_id, p.name as project_name, p.id FROM `tasks` t JOIN `projects` p ON t.project_id = p.id WHERE t.user_id=$user_id";
+    $result = mysqli_query($con, $sql);
+    if (!$result) {
+        $error = mysqli_error($con);
+        print("Ошибка MYSQL" . $error);
+    }
 
-$sql = "SELECT t.name as task_name, t.date,t.file, t.completed, t.project_id, p.name as project_name, p.id FROM `tasks` t JOIN `projects` p ON t.project_id = p.id WHERE t.user_id=1 ";
-$result=mysqli_query($con,$sql);
-if(!$result){
-$error=mysqli_error($con);
-print("Ошибка MYSQL".$error);
+    $tasks_arr = mysqli_fetch_all($result, MYSQLI_ASSOC);
 }
-
-$tasks_arr=mysqli_fetch_all($result,MYSQLI_ASSOC);
 ?>
 <?php
 
 require('./helpers.php');
 
 $show_complete_tasks = rand(0, 1);
+$quest = include_template('guest.php');
 
-$main=include_template('main.php',[
-    'tasks_arr'=>$tasks_arr,
-    'projects_arr'=>$projects_arr,
-    'show_complete_tasks'=>$show_complete_tasks
-]);
-
-
-$user=  $users[0]['login'] ;
-
-$data=array(
-    'main'=>$main,
-    'title' => 'Дела в порядке', 
-    'user'=>$user
+$data = array(
+    'main' => $quest,
+    'title' => 'Дела в порядке',
+    'isAuth' => $isAuth,
+    'user_active' => null
 );
-$layout = include_template('layout.php',$data);
+
+if ($isAuth == true) {
+    $main = include_template('main.php', [
+        'tasks_arr' => $tasks_arr,
+        'projects_arr' => $projects_arr,
+        'show_complete_tasks' => $show_complete_tasks
+    ]);
+
+    $data = array(
+        'main' => $main,
+        'title' => 'Дела в порядке',
+        'isAuth' => $isAuth,
+        'user_active' => $user_active
+    );
+}
+
+$layout = include_template('layout.php', $data);
+
 
 print($layout);
 ?>

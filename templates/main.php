@@ -4,15 +4,15 @@
 
         <nav class="main-navigation">
             <ul class="main-navigation__list">
-         
-
                 <?php foreach ($projects_arr as $key => $value) : ?>
-                    <?php     $project_id=$value['id'];
+                    <?php $project_id = $value['id'];
                     $project_name = $value['name'];
-                    $project=$value;?>
+                    $project = $value; ?>
                     <li class="main-navigation__list-item <?php if (isset($_GET['project']) && $_GET['project'] == $project_id) echo 'main-navigation__list-item--active'; ?>">
-                        <a class="main-navigation__list-item-link" href="/?project=<?=$project_id ?>"><?= $project_name; ?></a>
-                        <span class="main-navigation__list-item-count"><?= tasks_count($tasks_arr, $project_id) ; ?></span>
+                        <a class="main-navigation__list-item-link"
+                           href="/?project=<?= $project_id ?>"><?= $project_name; ?></a>
+                        <span
+                            class="main-navigation__list-item-count"><?= tasks_count($tasks_arr, $project_id); ?></span>
                     </li>
                 <?php endforeach; ?>
             </ul>
@@ -41,7 +41,7 @@
 
             <label class="checkbox">
 
-                <input class="checkbox__input visually-hidden show_completed"   <?php
+                <input class="checkbox__input visually-hidden show_completed" <?php
                 if ($show_complete_tasks == 1) {
                     echo "checked";
                 } else {
@@ -53,64 +53,70 @@
         </div>
 
         <table class="tasks">
-         
+
             <?php
 
 
-            if(isset($_GET['project'])){
+            if (isset($_GET['project'])) {
                 $activeProjectId = $_GET['project'];
                 $projectActive = TRUE;
-              
+
             } else {
                 $projectActive = FALSE;
             }
 
-                   
-            if ( $projectActive &&  !IsProjectBD($activeProjectId , $projects_arr)){
+
+            if ($projectActive && !IsProjectBD($activeProjectId, $projects_arr)) {
                 print('404');
             } else {
                 foreach ($tasks_arr as $task) {
-                    $project_id=$task['project_id'];
-                       $task_name = $task['task_name'];
-                       $task_date = $task['date'];
-                      $task_completed = $task['completed'];
-                      $task_file=$task['file'];
-                    if ( $projectActive && $activeProjectId !==  $project_id){
+                    $project_id = $task['project_id'];
+                    $task_name = $task['task_name'];
+                    $task_date = $task['date'];
+                    $task_completed = $task['completed'];
+                    $task_file = $task['file'];
+                    if ($projectActive && $activeProjectId !== $project_id) {
                         continue;
                     }
                     if ($show_complete_tasks == 0 && $task_completed == true) {
-                               continue;
-                           }
-               
-        
+                        continue;
+                    }
 
-                echo ' <tr class="tasks__item '; if ($task_completed == false) {echo date_important($task_date);}echo' task ';
-                if ($task_completed == true) {
-                    echo 'task--completed';
-                }
-                echo '">';
-                echo ' <td class="task__select  ">
+
+                    echo ' <tr class="tasks__item ';
+                    if ($task_completed == false) {
+                        echo date_important($task_date);
+                    }
+                    echo ' task ';
+                    if ($task_completed == true) {
+                        echo 'task--completed';
+                    }
+                    echo '">';
+                    echo ' <td class="task__select  ">
                             <label class="checkbox task__checkbox">
-                                <input class="checkbox__input visually-hidden task__checkbox" '; if ($task_completed == true) { echo "checked";}
-                echo '  type="checkbox" value="1">';
-                echo '    <span class="checkbox__text">' . $task_name . '</span>
+                                <input class="checkbox__input visually-hidden task__checkbox" ';
+                    if ($task_completed == true) {
+                        echo "checked";
+                    }
+                    echo '  type="checkbox" value="1">';
+                    echo '    <span class="checkbox__text">' . $task_name . '</span>
                             </label>
                          </td>
                          <td class="task__file">';
-                         if ($task['file']=='') {
-                          echo'<a class="download-link"  style ="display:none" href="#"></a>';
-                         }else {
-                          echo' <a class="download-link" href="'. $task_file.'"></a>';
-                          } 
-                        echo'   
-                                         
+                    if ($task['file'] == '') {
+                        echo '<a class="download-link"  style ="display:none" href="#"></a>';
+                    } else {
+                        echo ' <a class="download-link" href="' . $task_file . '"></a>';
+                    }
+                    echo '
+
                          </td>
                          <td class="task__date ">' . $task_date . '</td>
                     </tr>
                             ';
-             }
-        }          
-      ?>
+                }
+            }
+            ?>
         </table>
     </main>
 </div>

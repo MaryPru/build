@@ -5,7 +5,7 @@ $con = @mysqli_connect('localhost', 'root', '', 'mydeal');
 if ($con == false) {
     print("Ошибка" . mysqli_connect_error());
 } else {
-    // print("Соединение установлено");
+   print("Соединение установлено");
 }
 
 mysqli_set_charset($con, "utf8");
@@ -35,7 +35,7 @@ $tasks_arr = mysqli_fetch_all($result, MYSQLI_ASSOC);
 ?>
 <?php
 require('../helpers.php');
-require('../data.php');
+require('../data-project.php');
 
 $user_active = $_SESSION['user_active'];;
 
@@ -53,7 +53,7 @@ $data = array(
     'title' => 'Дела в порядке',
     'user_active' => $user_active
 );
-$add = include_template('add.php', $data);
+$add = include_template('add-project.php', $data);
 
 print($add);
 ?>
@@ -61,48 +61,29 @@ print($add);
 $errors = [];
 
 if (!empty ($_POST)) {
-//  debug($_POST);
+  debug($_POST);
     $fields = load($fields);
-//   debug($fields);
+   debug($fields);
 
-//   echo "<pre>";
-//    print_r( $fields );
-// echo "</pre>";
-    if (($errors = validate($fields)) || ($errors = validateDate($_POST['date']))) {
-        // debug($errors);
+   echo "<pre>";
+    print_r( $fields );
+ echo "</pre>";
+    if ($errors = validate($fields)){
+         debug($errors);
     }
 
-    // echo 'Исходное имя файла - '.$_FILES['file']['name'].'</br>';
-    // echo 'Размер файла в байтах - '.$_FILES['file']['size'].'</br>';
-    // echo 'Тип файла - '.$_FILES['file']['type'].'</br>';
-    // echo 'Временный файл хранения - '.$_FILES['file']['tmp_name'].'</br>';
-    $target_path = $_SERVER['DOCUMENT_ROOT'] . "/uploads/" . basename($_FILES['file']['name']);
-    if (@move_uploaded_file($_FILES['file']['tmp_name'], $target_path)) {
-        // echo 'Файл загружен';
-    } else {
-        // echo 'Ошибка загрузки файла';
-    }
 }
 
 if (!empty($_POST) && empty($errors)) {
-    $task = $_POST;
-    $task['file'] = '';
-    if (!empty($_FILES)) {
-        $task['file'] = "/uploads/" . basename($_FILES['file']['name']);
-    }
+    $project = $_POST;
 
+    $sql = "INSERT INTO projects (name) VALUES (?)";
 
-    $sql = "INSERT INTO tasks (name, date, completed, file, project_id, user_id) VALUES (?, ? , ?, ?, ?, ?)";
+    $name = $project['name'];
 
-    $name = $task['name'];
-    $date = $task['date'];
-    $completed = 0;
-    $file = $task['file'];
-    $project_id = (int)$task['project_id'];
-    $user_id_new = $user_id;
 
     $stmt = mysqli_prepare($con, $sql);
-    mysqli_stmt_bind_param($stmt, "ssisii", $name, $date, $completed, $file, $project_id, $user_id_new);
+    mysqli_stmt_bind_param($stmt, "s", $name, );
 
     $res = mysqli_stmt_execute($stmt);
     if ($res) {
@@ -111,6 +92,7 @@ if (!empty($_POST) && empty($errors)) {
 }
 
 ?>
+
 <!DOCTYPE html>
 <html lang="ru">
 
@@ -166,64 +148,20 @@ if (!empty($_POST) && empty($errors)) {
                     </ul>
                 </nav>
 
-                <a class="button button--transparent button--plus content__side-button" href="add-project.php">Добавить
-                    проект</a>
+                <a class="button button--transparent button--plus content__side-button" href="/templates/add-project.php">Добавить проект</a>
             </section>
 
             <main class="content__main">
-                <h2 class="content__main-heading">Добавление задачи</h2>
+                <h2 class="content__main-heading">Добавление проекта</h2>
 
-                <form class="form" method="post" autocomplete="off" enctype="multipart/form-data">
+                <form class="form"   method="post" autocomplete="off">
                     <div class="form__row">
-                        <label class="form__label" for="name">Название <sup>*</sup></label>
+                        <label class="form__label" for="project_name">Название <sup>*</sup></label>
 
-                        <input class="form__input <? if (isset($errors['name'])) echo ' form__input--error'; ?>"
-                               type="text" name="name" id="name" value="<?= htmlspecialchars(getPostVal('name')); ?>"
-                               placeholder="Введите название">
+                        <input class="form__input  <? if (isset($errors['name'])) echo ' form__input--error'; ?>" type="text" name="name" id="project_name" value="<?= htmlspecialchars(getPostVal('name')); ?>" placeholder="Введите название проекта">
                         <?php if (isset($errors['name'])) : ?>
                             <p class="form_message"><?= $errors['name']; ?></p>
                         <?php endif; ?>
-                    </div>
-
-                    <div class="form__row">
-                        <label class="form__label" for="project">Проект <sup>*</sup></label>
-
-                        <select class="form__input form__input--select " name="project_id" id="project">
-
-
-                            <?php foreach ($projects_arr as $key => $value) : ?>
-                                <?php $project_id = $value['id'];
-                                $project_name = $value['name'];
-                                ?>
-                                <option
-                                    value="<?= $project_id; ?>" <? if ($project_id == getPostVal('project_id')) echo ' selected'; ?>><?= htmlspecialchars($project_name); ?></option>
-                            <?php endforeach; ?>
-
-
-                        </select>
-                    </div>
-
-                    <div class="form__row">
-                        <label class="form__label" for="date">Дата выполнения</label>
-
-                        <input
-                            class="form__input form__input--date  <? if (isset($errors['date'])) echo ' form__input--error'; ?>"
-                            type="text" name="date" id="date" value="" placeholder="Введите дату в формате ГГГГ-ММ-ДД">
-                        <?php if (isset($errors['date'])) : ?>
-                            <p class="form_message"><?= $errors['date']; ?></p>
-                        <?php endif; ?>
-                    </div>
-
-                    <div class="form__row">
-                        <label class="form__label" for="file">Файл</label>
-
-                        <div class="form__input-file">
-                            <input class="visually-hidden" type="file" name="file" id="file">
-
-                            <label class="button button--transparent" for="file">
-                                <span>Выберите файл</span>
-                            </label>
-                        </div>
                     </div>
 
                     <div class="form__row form__row--controls">
@@ -232,9 +170,9 @@ if (!empty($_POST) && empty($errors)) {
                 </form>
             </main>
         </div>
-
     </div>
 </div>
+
 <footer class="main-footer">
     <div class="container">
         <div class="main-footer__copyright">
@@ -293,10 +231,5 @@ if (!empty($_POST) && empty($errors)) {
         </div>
     </div>
 </footer>
-<script src="../flatpickr.js"></script>
-<script src="../script.js"></script>
 </body>
 </html>
-
-
-

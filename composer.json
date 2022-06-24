@@ -1,0 +1,7 @@
+{
+    "require": {
+        "php": ">=5.4.2",
+        "cboden/ratchet": "dev-master",
+        "swiftmailer/swiftmailer": "^6.0"
+    }
+}
